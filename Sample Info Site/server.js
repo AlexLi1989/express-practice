@@ -97,23 +97,23 @@
 const express = require("express");
 const app = express();
 const path = require("node:path"); //this is still needed as it is a basic function of NodeJS
+app.set("view engine", "ejs"); //set view engine to ejs
 const PORT = process.env.PORT || 8080;
 
 //use express.static middleware to handle file request
 // 它是鎖定「資料夾」，而不是「單一檔案」
 // 它不需要 utf8 參數
 app.use(express.static(path.join(__dirname, "assets")));
-app.get("/", (req, res) =>
-  res.sendFile(path.join(__dirname, "pages", "index.html")),
+app.get("/", (req, res) => res.render("index", { TITLE: "Home" }));
+app.get("/about", (req, res) => res.render("about", { TITLE: "About" }));
+app.get("/contact-me", (req, res) =>
+  res.render("contact-me", { TITLE: "Contact Me" }),
 );
-app.get("/about", (req, res) =>
-  res.sendFile(path.join(__dirname, "pages", "about.html")),
-);
-app.get("/contact", (req, res) =>
-  res.sendFile(path.join(__dirname, "pages", "contact-me.html")),
-);
-app.get("*", (req, res) =>
+app.use((req, res) =>
   res
     .status(404) //預設為 200：Express 會自動假設這次的請求是成功的，因此會在底層自動幫你加上 200 OK 的狀態碼發送給瀏覽器。這就是為什麼你之前不用特別寫。404 需要手動指定：當你要回傳的不是成功的內容（例如找不到網頁的 404，或是伺服器出錯的 500），Express 無法預知你的意圖。如果你不寫 .status(404)，Express 依然會用預設值 200 把那張 404.html 檔案送出去。
-    .sendFile(path.join(__dirname, "pages", "404.html")),
+    .render("404", { TITLE: "Error" }),
 );
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
