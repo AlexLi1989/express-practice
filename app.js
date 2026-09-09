@@ -1,7 +1,27 @@
 const express = require("express");
-const app = express(); //This is our server.
+const app = express(); //this is our server
+const authorRouter = require("./routes/authorRouter");
+const bookRouter = require("./routes/bookRouter");
+const indexRouter = require("./routes/indexRouter");
 
-app.get("/", (req, res) => res.send("Hello, world!"));
+/*
+GET /
+GET /about
+GET /contact
+POST /contact
+
+GET /books
+GET /books/:bookId
+GET /books/:bookId/reserve
+POST /books/:bookId/reserve
+
+GET /authors
+GET /authors/:authorId
+*/
+
+app.use("/authors", authorRouter);
+app.use("/books", bookRouter);
+app.use("/", indexRouter);
 
 const PORT = process.env.PORT || 5173; //Usually, the port number would come from an environment variable with a fallback value in case the environment variable does not exist.
 const server = app.listen(PORT, () => {
