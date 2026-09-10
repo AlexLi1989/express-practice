@@ -34,3 +34,8 @@ server.on("error", (error) => {
   console.error("server failed to start, error : ", error.message);
   throw error;
 });
+// Every thrown error in the application or the previous middleware function calling `next` with an error as an argument will eventually go to this middleware function
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.statusCode || 500).send(err.message);
+});
