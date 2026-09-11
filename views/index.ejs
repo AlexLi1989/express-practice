@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <%- include('partials/navbar', {links: links}) %>
+    <% users.forEach((user)=>{ %>
+      <%- include('partials/user', {user:user}) %>
+    <% }) %>
+    <%= message %>
+  </body>
+</html>

@@ -1,8 +1,12 @@
+const path = require("node:path");
 const express = require("express");
 const app = express(); //this is our server
 const authorRouter = require("./routes/authorRouter");
 const bookRouter = require("./routes/bookRouter");
 const indexRouter = require("./routes/indexRouter");
+const aboutRouter = require("./routes/aboutRouter");
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 /*
 GET /
@@ -18,7 +22,8 @@ POST /books/:bookId/reserve
 GET /authors
 GET /authors/:authorId
 */
-
+app.use(express.static(path.join(__dirname, "assets")));
+app.use("/about", aboutRouter);
 app.use("/authors", authorRouter);
 app.use("/books", bookRouter);
 app.use("/", indexRouter);
