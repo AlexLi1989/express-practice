@@ -3,6 +3,9 @@ const { body, validationResult, matchedData } = require("express-validator");
 
 const alphaErr = "must only contain letters.";
 const lengthErr = "must be between 1 and 10 characters.";
+const emailErr = "Must be formatted as an email address.";
+const ageErr = "Must be a number between 18 and 120.";
+const bioErr = "Maximum 200 characters.";
 
 const validateUser = [
   body("firstName")
@@ -10,13 +13,32 @@ const validateUser = [
     .isAlpha()
     .withMessage(`First name ${alphaErr}`)
     .isLength({ min: 1, max: 10 })
-    .withMessage(`First name ${lengthErr}`),
+    .withMessage(`First name ${lengthErr}`)
+    .escape(),
   body("lastName")
     .trim()
     .isAlpha()
     .withMessage(`Last name ${alphaErr}`)
     .isLength({ min: 1, max: 10 })
-    .withMessage(`Last name ${lengthErr}`),
+    .withMessage(`Last name ${lengthErr}`)
+    .escape(),
+  body("email")
+    .trim()
+    .isEmail()
+    .withMessage(`Email ${emailErr}`)
+    .normalizeEmail(),
+  body("age")
+    .optional({ values: "falsy" })
+    .trim()
+    .isInt({ min: 18, max: 120 })
+    .withMessage(`Age ${ageErr}`)
+    .toInt(),
+  body("bio")
+    .optional({ values: "falsy" })
+    .trim()
+    .isLength({ max: 200 })
+    .withMessage(`Bio ${bioErr}`)
+    .escape(),
 ];
 
 exports.usersListGet = (req, res) => {
@@ -29,6 +51,7 @@ exports.usersListGet = (req, res) => {
 exports.usersCreateGet = (req, res) => {
   res.render("createUser", {
     title: "Create user",
+    formData: {}, //give an empty object for first entry
   });
 };
 
@@ -41,10 +64,11 @@ exports.usersCreatePost = [
       return res.status(400).render("createUser", {
         title: "Create user",
         errors: errors.array(),
+        formData: req.body, //return the form data so we can use it in the form again
       });
     }
-    const { firstName, lastName } = matchedData(req);
-    usersStorage.addUser({ firstName, lastName });
+    const { firstName, lastName, email, age, bio } = matchedData(req);
+    usersStorage.addUser({ firstName, lastName, email, age, bio });
     res.redirect("/");
   },
 ];
@@ -65,16 +89,39 @@ exports.usersUpdatePost = [
     if (!errors.isEmpty()) {
       return res.status(400).render("updateUser", {
         title: "Update user",
-        user: user,
+        user: { ...user, ...req.body },
         errors: errors.array(),
       });
     }
-    const { firstName, lastName } = matchedData(req);
-    usersStorage.updateUser(req.params.id, { firstName, lastName });
+    const { firstName, lastName, email, age, bio } = matchedData(req);
+    usersStorage.updateUser(req.params.id, {
+      firstName,
+      lastName,
+      email,
+      age,
+      bio,
+    });
     res.redirect("/");
   },
 ];
 exports.usersDeletePost = (req, res) => {
-  userStorage.deleteUser(req.params.id);
+  usersStorage.deleteUser(req.params.id);
   res.redirect("/");
+};
+
+exports.usersSearchGet = (req, res) => {
+  const { name, email } = matchedData(req, { includeOptionals: true }); //included optional means if user input only name or email, it will still work
+  let searchResults = [];
+  let hasSearched = false;
+  if (name || email) {
+    searchResults = usersStorage.searchUser({ name, email });
+    hasSearched = true;
+  }
+  res.render("searchUsers", {
+    title: "Search users",
+    name: name || "",
+    email: email || "",
+    users: searchResults,
+    hasSearched: hasSearched,
+  });
 };

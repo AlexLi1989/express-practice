@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <title><%= title %></title>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+
+    <form action='/search' method="GET">
+
+      <div>
+        <label for='name'>Search by Name:</label>
+        <input type="text" name="name" id="name" value="<%= name %>" placeholder="Enter name here">
+      </div>
+
+      <div>
+        <label for='email'>Search by Email:</label>
+        <input type="text" name="email" id="email" value="<%= email %>" placeholder="Enter email here">
+      </div>
+
+      <button type="submit">Search</button>
+    </form>
+    <% if(hasSearched) { %>
+      <% if(users.length > 0) { %>
+        <h2>Search Results</h2>
+          <ul>
+            <% users.forEach(user => { %>
+              <li>
+                ID: <%= user.id %>
+                Name: <%= user.firstName %> <%= user.lastName %>
+                Email: <%= user.email %>
+                Age: <%= user.age || 'N/A' %>
+                Bio: <%= user.bio || 'N/A' %>
+              </li>
+            <% }) %>
+          </ul>
+      <% } else { %>
+        <h2>No results found</h2>
+      <% } %>
+    <% } %>
+
+    <a href="/">Back to home</a>
+  </body>
+</html>
