@@ -5,30 +5,17 @@ const authorRouter = require("./routes/authorRouter");
 const bookRouter = require("./routes/bookRouter");
 const indexRouter = require("./routes/indexRouter");
 const aboutRouter = require("./routes/aboutRouter");
+const usersRouter = require("./routes/usersRouter");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
-
-/*
-GET /
-GET /about
-GET /contact
-POST /contact
-
-GET /books
-GET /books/:bookId
-GET /books/:bookId/reserve
-POST /books/:bookId/reserve
-
-GET /authors
-GET /authors/:authorId
-*/
 app.use(express.static(path.join(__dirname, "assets")));
+app.use(express.urlencoded({ extended: true }));
 app.use("/about", aboutRouter);
 app.use("/authors", authorRouter);
 app.use("/books", bookRouter);
-app.use("/", indexRouter);
+app.use("/", usersRouter);
 
-const PORT = process.env.PORT || 5173; //Usually, the port number would come from an environment variable with a fallback value in case the environment variable does not exist.
+const PORT = process.env.PORT || 8080; //Usually, the port number would come from an environment variable with a fallback value in case the environment variable does not exist.
 const server = app.listen(PORT, () => {
   console.log(`My first Express app - listening on port ${PORT}!`);
 });

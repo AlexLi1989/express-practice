@@ -4,6 +4,9 @@ const indexRouter = Router();
 const links = [
   { href: "/", text: "Home" },
   { href: "/about", text: "About" },
+  { href: "/books", text: "Books" },
+  { href: "/authors", text: "Authors" },
+  { href: "/create", text: "Create User" },
 ];
 
 const users = ["Rose", "Cake", "Biff"];
